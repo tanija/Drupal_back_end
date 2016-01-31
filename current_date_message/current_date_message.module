@@ -1,0 +1,55 @@
+<?php
+/*
+ * implements hook_init
+ */
+
+function current_date_message_init(){
+    $date = date("Ymd");
+    $format_date = date("l, F d, Y", strtotime($date));
+    $type_mesege = variable_get('current_date_message_select', 'status');
+    $is_enabled = variable_get('current_date_message_enable_message',0);
+    $is_admin = path_is_admin(current_path());
+
+        
+//   if ($is_enabled == 1 && $is_admin) {
+       drupal_set_message('Today is '.$format_date, $type_mesege);        
+//    }
+       
+}
+
+
+/*
+ * implements hook_menu
+ */
+function current_date_message_menu(){
+    $items['admin/config/current-date-message'] = array(
+      'title' => t('Current date message config page'),
+      'description' => 'Lorem ipsum dolar sit amet',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array ('current_date_message_settings_form'),
+      'access callback' => TRUE,
+      'type' => MENU_NORMAL_ITEM,            
+    );
+    
+    return $items;
+}
+    
+    function current_date_message_settings_form($form, $form_state){
+     $form['current_date_message_enable_message'] = array(
+       '#type' => 'checkbox',
+       '#title' => t('Enable current date message.'),
+       '#dafault_value' => variable_get('current_date_message_enable_message', 0)
+     );
+     
+     $form['current_date_message_select'] = array(
+       '#type' => 'select',
+       '#title' => t('Message type'),
+       '#options' => array(
+       'status' => t('Status'),
+       'warning' => t('Warning'),
+       'error' => t('Error'),
+       ),
+       '#default_value' => variable_get('current_date_message_select', 'status'),
+   );
+     return system_settings_form($form);    
+}
