@@ -1,5 +1,5 @@
 name = Current date message
 description = My first homework in "Drupal back end course". 
 core = 7.x
-package = Softuni 
+package = Drupal back-end 
 configure = admin/config/current-date-message
