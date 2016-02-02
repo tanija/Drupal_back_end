@@ -1,0 +1,32 @@
+<?php
+
+/*
+ * Enable modulea
+ * 
+ */
+
+module_enable(array('modulea'),TRUE);
+
+/**
+ * Implements hook_modulea_config().
+ */
+function moduleb_modulea_config() {
+    return 'This text comes from module B';
+}
+
+/**
+ * Implements hook_form_alter() for modulea_admin_settings().
+ */
+function moduleb_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    case 'modulea_admin_settings':
+      $form['modulea_title'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Page Title'),
+    '#default_value' => variable_get('modulea_title', 'My Module B notes'),
+    '#size' => 60,
+    '#maxlength' => 256,
+  );
+      break;
+  }
+}

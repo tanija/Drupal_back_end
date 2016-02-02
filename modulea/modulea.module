@@ -1,0 +1,55 @@
+<?php
+
+/**
+ * Creating hook_modulea_config().
+ */
+function modulea_modulea_config() {
+
+}
+
+/**
+ * Implements hook_help().
+ */
+function modulea_help($path, $arg) {
+  switch ($path) {
+    case 'admin/config/content/modulea-config':
+      return '<p>' . t('We have a help text for this module.') . '</p>';
+
+    case 'admin/help#modulea':
+      $output = '';
+      $output .= '<p>' . t('We have another help text for this module.Contrary '
+          . 'to popular belief, Lorem Ipsum is not simply random text. It has'
+          . ' roots in a piece of classical Latin literature from 45 BC, '
+          . 'making it over 2000 years old.') . '</p>';
+      return $output;
+  }
+}
+
+    
+/**
+ * Implements hook_permission().
+ */
+function modulea_permission() {
+  return array(
+    'administer modulea' => array(
+      'title' => t('Administer my module'),
+      'description' => t('Perform administration tasks for my module.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu().
+ */
+function modulea_menu() {
+  $items['admin/config/content/modulea-config'] = array(
+    'title' => 'Modulea Config Page',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('modulea_admin_settings'),
+    'access arguments' => array('administer modulea'),
+    'file' => 'modulea.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
