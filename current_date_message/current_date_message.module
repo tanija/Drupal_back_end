@@ -8,15 +8,33 @@ function current_date_message_init(){
     $format_date = date("l, F d, Y", strtotime($date));
     $type_mesege = variable_get('current_date_message_select', 'status');
     $is_enabled = variable_get('current_date_message_enable_message',0);
-    $is_admin = path_is_admin(current_path());
-
-        
-   if ($is_enabled == 1 && $is_admin) {
-       drupal_set_message('Today is '.$format_date, $type_mesege);        
-  }
+    $is_admin = path_is_admin(current_path()); 
+    $is_allow_anonymus_user = variable_get('current_date_message_enable_anonymous_users',0);
+    $is_user = user_is_logged_in();
+       
+    if ($is_enabled == 1) {
+        if ($is_allow_anonymus_user) {
+             drupal_set_message('Today is '.$format_date, $type_mesege); 
+        }
+                else if ($is_user) {
+                     drupal_set_message('Today is '.$format_date, $type_mesege);
+                }            
+    }  
        
 }
 
+/*
+ * 
+ * Implements hook_permissions
+ */
+function current_date_message_permission() {
+  return array(
+    'administer current date message' => array(
+      'title' => t('Access Current Date Message Page'),
+      'description' => t('Perform administration tasks for Current Date Message module.'),
+    ),
+  );
+}
 
 /*
  * implements hook_menu
@@ -27,29 +45,27 @@ function current_date_message_menu(){
       'description' => 'Lorem ipsum dolar sit amet',
       'page callback' => 'drupal_get_form',
       'page arguments' => array ('current_date_message_settings_form'),
-      'access callback' => TRUE,
+      'access callback' => 'user_access',
+       'access arguments' => array('administer current date message'),
+       'file' => 'includes/settings_form.inc',
       'type' => MENU_NORMAL_ITEM,            
+    ); 
+    $items['admin/config/current-date-message/default'] = array(
+      'title' => t('Default'),
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'weight' => -10,
     );
     
+     $items['admin/config/current-date-message/advanced'] = array(
+      'title' => t('Advanced'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array ('current_date_message_settings_advanced_form'),
+       'access callback' => 'user_access',
+      'access arguments' => array('administer current date message'),
+       'file' => 'includes/settings_form.inc',
+      'type' => MENU_LOCAL_TASK, 
+       'weight' => 10,
+    );
+           
     return $items;
-}
-    
-    function current_date_message_settings_form($form, $form_state){
-     $form['current_date_message_enable_message'] = array(
-       '#type' => 'checkbox',
-       '#title' => t('Enable current date message.'),
-       '#default_value' => variable_get('current_date_message_enable_message', 0),
-     );
-     
-     $form['current_date_message_select'] = array(
-       '#type' => 'select',
-       '#title' => t('Message type'),
-       '#options' => array(
-       'status' => t('Status'),
-       'warning' => t('Warning'),
-       'error' => t('Error'),
-       ),
-       '#default_value' => variable_get('current_date_message_select', 'status'),
-   );
-     return system_settings_form($form);    
 }
